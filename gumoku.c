@@ -33,11 +33,11 @@ void handle_end_game(int board_size, int win_condition, int allow_undo, int time
 int main() {
     int choice;
     int board_size = 15, win_condition = 5, allow_undo = 0;
-    int timer_enabled = 0, time_limit = 60; 
+    int timer_enabled = 0, time_limit = 60;
+	draw_menu(); 
     
-    draw_menu();
-    scanf("%d", &choice);
     while (1) {
+    	scanf("%d", &choice);
         switch (choice) {
             case 1:
                 person_person(board_size, win_condition, allow_undo, timer_enabled, time_limit);
@@ -51,6 +51,8 @@ int main() {
                 break;
             default:
                 printf("Invalid option, please try again.\n");
+                printf("Please select: ");
+                break;
         }
     }
     return 0;
@@ -228,7 +230,7 @@ void handle_end_game(int board_size, int win_condition, int allow_undo, int time
             exit(0);
             break;
         case 3:
-            main();
+            main(); 
             break;
     }
 }
