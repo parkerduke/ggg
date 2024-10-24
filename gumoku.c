@@ -33,11 +33,11 @@ void handle_end_game(int board_size, int win_condition, int allow_undo, int time
 int main() {
     int choice;
     int board_size = 15, win_condition = 5, allow_undo = 0;
-    int timer_enabled = 0, time_limit = 60;
-	draw_menu(); 
+    int timer_enabled = 0, time_limit = 60; 
     
+    draw_menu();
+    scanf("%d", &choice);
     while (1) {
-    	scanf("%d", &choice);
         switch (choice) {
             case 1:
                 person_person(board_size, win_condition, allow_undo, timer_enabled, time_limit);
@@ -54,6 +54,7 @@ int main() {
                 printf("Please select: ");
                 break;
         }
+        scanf("%d", &choice);
     }
     return 0;
 }
@@ -126,15 +127,31 @@ void draw_menu(void) {
 void customize_game(int *board_size, int *win_condition, int *allow_undo, int *timer_enabled, int *time_limit) {
     printf("Enter board size (e.g., 15 for 15x15): ");
     scanf("%d", board_size);
+    while(*board_size < 2){
+    	printf("Wrong number!!Enter again: ");
+    	scanf("%d", board_size);
+	}
 
     printf("Enter number of consecutive pieces to win: ");
     scanf("%d", win_condition);
+    while(*win_condition < 2 || *win_condition > *board_size){
+    	printf("Wrong number!!Enter again: ");
+    	scanf("%d", win_condition);
+	}
 
     printf("Allow undo? (1 for yes, 0 for no): ");
     scanf("%d", allow_undo);
+    while(*allow_undo > 1){
+    	printf("Wrong number!!Enter again: ");
+    	scanf("%d", allow_undo);
+	}
 
     printf("Enable timer? (1 for yes, 0 for no): ");
     scanf("%d", timer_enabled);
+    while(*timer_enabled > 1){
+    	printf("Wrong number!!Enter again: ");
+    	scanf("%d", timer_enabled);
+	}
 
     if (*timer_enabled) {
         printf("Enter time limit per player (in seconds): ");
@@ -230,7 +247,7 @@ void handle_end_game(int board_size, int win_condition, int allow_undo, int time
             exit(0);
             break;
         case 3:
-            main(); 
+            main();
             break;
     }
 }
@@ -241,10 +258,15 @@ void end_menu(int *choice) {
     printf("*      2. Exit Game             *\n");
     printf("*      3. Return to Main Menu   *\n");
     printf("*******************************\n");
-    printf("Please select: ");
-    scanf("%d", choice);
+    do{printf("Please select: ");
+        scanf("%d", choice);
+        if (*choice < 1 || *choice > 3) {
+            printf("Invalid choice! Please enter 1, 2, or 3.\n");
+        }
+    } while (*choice < 1 || *choice > 3); 
     printf("\033[H\033[J");
 }
+
 
 void move_cursor(int chessboard[][MAX_COL], int *cursor_x, int *cursor_y, int direction, int board_size) {
     switch (direction) {
