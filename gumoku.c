@@ -52,9 +52,9 @@ int main() {
             default:
                 printf("Invalid option, please try again.\n");
                 printf("Please select: ");
+                scanf("%d", &choice);
                 break;
         }
-        scanf("%d", &choice);
     }
     return 0;
 }
@@ -114,13 +114,13 @@ void draw_chessman(int x, int y, int type, char *tableline, int cursor_x, int cu
 }
 
 void draw_menu(void) {
-    printf("*******************************\n");
+    printf("********************************\n");
     printf("******     Gomoku Game    ******\n");
     printf("******      Game Mode     ******\n");
     printf("*      1. Classic Mode         *\n");
     printf("*      2. Customize Game       *\n");
     printf("*      3. Exit Game            *\n");
-    printf("*******************************\n");
+    printf("********************************\n");
     printf("Please select: ");
 }
 
@@ -165,15 +165,21 @@ void person_person(int board_size, int win_condition, int allow_undo, int timer_
     int player = BLACK;
     Move move_history[MAX_ROW * MAX_COL];
     int move_count = 0;
-    int black_time = time_limit, white_time = time_limit;
+    int black_time = time_limit, white_time = time_limit, black_clock = time_limit, white_clock = time_limit;
     clock_t start_time = clock();
     char key = 0;
+    
+    draw_chessboard(board_size, board_size, chessboard, cursor_x, cursor_y, black_time, white_time, timer_enabled);
 
     while (1) {
         if (timer_enabled) {
             int elapsed_time = (clock() - start_time) / CLOCKS_PER_SEC;
             if (player == BLACK) {
                 black_time = time_limit - elapsed_time;
+                if (black_time == black_clock - 1) {
+                	draw_chessboard(board_size, board_size, chessboard, cursor_x, cursor_y, black_time, white_time, timer_enabled);
+                	black_clock = black_time;
+				}
                 if (black_time <= 0) {
                     printf("White wins by timeout!\n");
                     handle_end_game(board_size, win_condition, allow_undo, timer_enabled, time_limit);
@@ -181,6 +187,10 @@ void person_person(int board_size, int win_condition, int allow_undo, int timer_
                 }
             } else {
                 white_time = time_limit - elapsed_time;
+                if (white_time == white_clock - 1) {
+                	draw_chessboard(board_size, board_size, chessboard, cursor_x, cursor_y, black_time, white_time, timer_enabled);
+                	white_clock = white_time;
+				}
                 if (white_time <= 0) {
                     printf("Black wins by timeout!\n");
                     handle_end_game(board_size, win_condition, allow_undo, timer_enabled, time_limit);
@@ -188,8 +198,6 @@ void person_person(int board_size, int win_condition, int allow_undo, int timer_
                 }
             }
         }
-
-        draw_chessboard(board_size, board_size, chessboard, cursor_x, cursor_y, black_time, white_time, timer_enabled);
 
         if (_kbhit()) {
             key = _getch();
@@ -214,6 +222,11 @@ void person_person(int board_size, int win_condition, int allow_undo, int timer_
                             handle_end_game(board_size, win_condition, allow_undo, timer_enabled, time_limit);
                             return;
                         }
+                        if (is_full(chessboard, board_size, board_size)) {
+                            printf("The board is full! It's a draw.\n");
+                            handle_end_game(board_size, win_condition, allow_undo, timer_enabled, time_limit);
+                            return;
+                        }
                         player = (player == BLACK) ? WHITE : BLACK;  
                         start_time = clock();  
                     }
@@ -230,11 +243,14 @@ void person_person(int board_size, int win_condition, int allow_undo, int timer_
                 default:
                     break;
             }
+            draw_chessboard(board_size, board_size, chessboard, cursor_x, cursor_y, black_time, white_time, timer_enabled);
         }
 
         Sleep(1); 
     }
 }
+
+
 
 void handle_end_game(int board_size, int win_condition, int allow_undo, int timer_enabled, int time_limit) {
     int choice;
@@ -253,11 +269,11 @@ void handle_end_game(int board_size, int win_condition, int allow_undo, int time
 }
 
 void end_menu(int *choice) {
-    printf("*******************************\n");
+    printf("*********************************\n");
     printf("*      1. Play Again            *\n");
     printf("*      2. Exit Game             *\n");
     printf("*      3. Return to Main Menu   *\n");
-    printf("*******************************\n");
+    printf("*********************************\n");
     do{printf("Please select: ");
         scanf("%d", choice);
         if (*choice < 1 || *choice > 3) {
